@@ -1,4 +1,5 @@
 <launch>
+
 	<arg name="namespace" default=""/>
   
 	<!-- <group ns="$(arg namespace)"> -->
@@ -6,4 +7,5 @@
 			<rosparam file="$(find seekthermal_ros)/config/seekthermal_ros.yaml" command="load" />
 		</node> 
 	<!-- </group> -->
+	
 </launch>
