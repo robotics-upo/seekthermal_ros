@@ -29,10 +29,10 @@ SeekthermalRos::SeekthermalRos(ros::NodeHandle nh): nh_(nh), it_(nh)
   nh_.getParam("camera_info_url", camera_info_url_);
 
   //Create a publisher for the raw thermal image
-  thermal_image_publisher_ = it_.advertiseCamera("/" + camera_name_ + "/" + thermal_image_topic_name_, 1);
-  colored_thermal_image_publisher_ = it_.advertise("/" + camera_name_ + "/" + colored_thermal_image_topic_name_, 1);
+  thermal_image_publisher_ = it_.advertiseCamera(camera_name_ + "/" + thermal_image_topic_name_, 1);
+  colored_thermal_image_publisher_ = it_.advertise(camera_name_ + "/" + colored_thermal_image_topic_name_, 1);
   thermal_image_raw_publisher_ =
-          nh_.advertise<seekthermal_ros::ThermalImage>("/" + camera_name_ + "/" + thermal_image_raw_topic_name_, 1);
+          nh_.advertise<seekthermal_ros::ThermalImage>(camera_name_ + "/" + thermal_image_raw_topic_name_, 1);
 
   //nh_.getParam("image_width", image_width_);
   //nh_.getParam("image_height", image_height_);
