@@ -27,6 +27,7 @@ SeekthermalRos::SeekthermalRos(ros::NodeHandle nh): nh_(nh), it_(nh)
   nh_.getParam("camera_frame_id", camera_frame_id_);
   nh_.getParam("camera_name", camera_name_);
   nh_.getParam("camera_info_url", camera_info_url_);
+  nh_.param("package_calibration_files", package_path_name,(std::string)"seekthermal_ros");
 
   //Create a publisher for the raw thermal image
   thermal_image_publisher_ = it_.advertiseCamera("/" + camera_name_ + "/" + thermal_image_topic_name_, 1);
@@ -103,7 +104,7 @@ SeekthermalRos::SeekthermalRos(ros::NodeHandle nh): nh_(nh), it_(nh)
     state_ = LOAD_MEAN;
   }
 
-  package_path_ = ros::package::getPath("seekthermal_ros");
+  package_path_ = ros::package::getPath(package_path_name);
 
   boost::thread* publishing_thread = new boost::thread(boost::bind(&SeekthermalRos::publishingThermalImages, this));
 
@@ -244,7 +245,7 @@ void SeekthermalRos::publishingThermalImages()
             image_pref.push_back(CV_IMWRITE_PNG_COMPRESSION);
             image_pref.push_back(0);
 
-            cv::imwrite(package_path_ + "/config/mean_compensation.png", mean_compensation_image_, image_pref);
+            cv::imwrite(package_path_ + "/config/"+camera_name_+"_mean_compensation.png", mean_compensation_image_, image_pref);
 
             frame_vector.clear();
             if (calibrate_dead_pixels_)
@@ -261,7 +262,7 @@ void SeekthermalRos::publishingThermalImages()
 
           //Load an already existing mean compensation image
         case LOAD_MEAN:
-          mean_compensation_image_ = imread(package_path_ + "/config/mean_compensation.png", CV_LOAD_IMAGE_GRAYSCALE);
+          mean_compensation_image_ = imread(package_path_ + "/config/"+camera_name_+"_mean_compensation.png", CV_LOAD_IMAGE_GRAYSCALE);
 
           if(! mean_compensation_image_.data )                              // Check for invalid input
           {
@@ -316,7 +317,7 @@ void SeekthermalRos::publishingThermalImages()
             image_pref.push_back(CV_IMWRITE_PNG_COMPRESSION);
             image_pref.push_back(0);
 
-            cv::imwrite(package_path_ + "/config/dead_pixel.png", inpaint_mask_, image_pref);
+            cv::imwrite(package_path_ + "/config/" + camera_name_+ "_dead_pixel.png", inpaint_mask_, image_pref);
 
             frame_vector.clear();
 
@@ -327,7 +328,7 @@ void SeekthermalRos::publishingThermalImages()
 
           //Load calibration image for dead pixels
         case LOAD_DEAD_PIXEL:
-          inpaint_mask_ = imread(package_path_ + "/config/dead_pixel.png", CV_LOAD_IMAGE_GRAYSCALE);
+          inpaint_mask_ = imread(package_path_ + "/config/"+ camera_name_ + "_dead_pixel.png", CV_LOAD_IMAGE_GRAYSCALE);
 
           if(! inpaint_mask_.data )                              // Check for invalid input
           {

@@ -69,7 +69,7 @@ private:
   std::string camera_frame_id_;
   std::string camera_info_url_;
 
-  std::string package_path_;
+  std::string package_path_, package_path_name;
 
   Pointer<Device> device_;
 
