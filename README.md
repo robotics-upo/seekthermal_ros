@@ -23,6 +23,12 @@ Then, you compile and install libseekthermal:
 
 `git clone https://github.com/ethz-asl/libseekthermal.git && mkdir -p libseekthermal/build && cd libseekthermal/build && cmake .. && make && sudo make install`
 
+## Known Issues
+
+If you try to launch the included launch and it gives Usb Error: Access denied, maybe you should need to add your user to the dialout group
+
+`sudo adduser <username> dialout`
+
 ## Todo
 
 - [ ] Improve performance. Sometimes the CPU comsuption is 100%
