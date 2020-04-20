@@ -9,7 +9,7 @@
 #define DEG2RAD 0.01745329
 
 namespace seekthermal_ros {
-
+  
 SeekthermalRos::SeekthermalRos(ros::NodeHandle nh): nh_(nh), it_(nh)
 {
   //Get parameters from configuration file
@@ -127,7 +127,13 @@ void SeekthermalRos::captureThermalImages(const Pointer<Device>& device)
             thermal_image_raw_publisher_.getNumSubscribers()>0)
     {
       Pointer<Frame> frame = new Frame();
-      device->capture(*frame);
+
+      try{
+        device->capture(*frame);
+      }catch(std::exception &ex){
+        ROS_ERROR("Protocol error capturing frame: %s", ex.what());
+        continue;
+      }
       
       boost::mutex::scoped_lock lock(mutex_);
       frame_queue_.push(frame);
