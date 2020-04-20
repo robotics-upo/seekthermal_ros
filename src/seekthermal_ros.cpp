@@ -2,7 +2,6 @@
 
 #include <seekthermal_ros/seekthermal_ros.h>
 
-#include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/image_encodings.h>
 
 #include <ros/package.h>
@@ -152,6 +151,7 @@ void SeekthermalRos::publishingThermalImages()
 
   static Frame meanFrame;
   static Frame varianceFrame;
+  ros::Rate sleep_rate(8);
 
   while(ros::ok())
   {
@@ -420,9 +420,9 @@ void SeekthermalRos::publishingThermalImages()
           std_msgs::Header header;
           header.seq = seq_counter;
           header.frame_id = camera_frame_id_;
-          //header.stamp = ros::Time(frame.getTimestamp());
-          cv_bridge::CvImage *cv_ptr_colored = new cv_bridge::CvImage(header, sensor_msgs::image_encodings::BGR8, cvImage_colored);
-          cv_bridge::CvImage *cv_ptr = new cv_bridge::CvImage(header, sensor_msgs::image_encodings::MONO8, cvImage);
+          //header.stamp = ros::Time(frame.getTimestamp());          
+          cv_ptr_colored.reset( new cv_bridge::CvImage(header, sensor_msgs::image_encodings::BGR8, cvImage_colored) );
+          cv_ptr.reset( new cv_bridge::CvImage(header, sensor_msgs::image_encodings::MONO8, cvImage));
 
           // grab the camera info
           sensor_msgs::CameraInfoPtr ci(new sensor_msgs::CameraInfo(cinfo_->getCameraInfo()));
@@ -447,6 +447,7 @@ void SeekthermalRos::publishingThermalImages()
       //ROS_INFO_STREAM("Calibration Frame");
       last_calibration_frame_ = *frame;
     }
+    sleep_rate.sleep();
   }
 }
 

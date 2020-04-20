@@ -25,6 +25,7 @@
 
 #include <queue>
 
+#include <cv_bridge/cv_bridge.h>
 // thermal image msg
 #include <seekthermal_ros/ThermalImage.h>
 
@@ -86,6 +87,9 @@ private:
 
   cv::Mat inpaint_mask_;
   cv::Mat mean_compensation_image_;
+  
+  std::unique_ptr<cv_bridge::CvImage> cv_ptr_colored;
+  std::unique_ptr<cv_bridge::CvImage> cv_ptr;
 
   std::queue<Pointer<Frame>> frame_queue_;
   mutable boost::mutex mutex_;
