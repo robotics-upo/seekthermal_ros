@@ -9,7 +9,7 @@
 #define DEG2RAD 0.01745329
 
 namespace seekthermal_ros {
-  
+
 SeekthermalRos::SeekthermalRos(ros::NodeHandle nh): nh_(nh), it_(nh)
 {
   //Get parameters from configuration file
@@ -48,9 +48,13 @@ SeekthermalRos::SeekthermalRos(ros::NodeHandle nh): nh_(nh), it_(nh)
     //camera_info.height = image_height_;
     cinfo_->setCameraInfo(camera_info);
   }
-
+  std::list<Pointer<Device>> devices;
   //Find all connected devices
-  std::list<Pointer<Device>> devices = discoverDevices();
+  try{
+    devices = discoverDevices();
+  }catch(SeekThermal::Pointer<SeekThermal::Interface>::NullError &ex){
+    ROS_ERROR("Error discovering devices, no device found, please connect a camera");
+  }
 
   SeekThermal::Usb::Context context;
   Pointer<Interface> interface;
@@ -71,7 +75,7 @@ SeekthermalRos::SeekthermalRos(ros::NodeHandle nh): nh_(nh), it_(nh)
     else
     {
       ROS_ERROR_STREAM("No devices found and no device specified in config file");
-      ros::shutdown();
+      exit(1);
     }
   }
   else
@@ -79,9 +83,12 @@ SeekthermalRos::SeekthermalRos(ros::NodeHandle nh): nh_(nh), it_(nh)
     ROS_INFO_STREAM("Trying to open device at " << device_adress_);
     interface = context.getInterface(device_adress_);
   }
-
-  device_ = interface->discoverDevice();
-
+  try{
+    device_ = interface->discoverDevice();
+  }catch(SeekThermal::Pointer<SeekThermal::Interface>::NullError &ex){
+    ROS_ERROR("Error discovering devices, no device found, please connect a camera");
+  }
+  
   if (!device_.isNull()) {
     interface->setTimeout(1);
     device_->setInterface(interface);
@@ -92,7 +99,7 @@ SeekthermalRos::SeekthermalRos(ros::NodeHandle nh): nh_(nh), it_(nh)
   else
   {
     ROS_ERROR_STREAM("Failed to open device");
-    ros::shutdown();
+    exit(1);
   }
 
   if (calibrate_mean_compensation_)
