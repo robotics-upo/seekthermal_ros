@@ -31,3 +31,4 @@ If you try to launch the included launch and it gives Usb Error: Access denied, 
 
 - [x] Improve performance. Sometimes the CPU comsuption is 100%: Finally fixed, there were 2 while loops withouth sleeps....
 - [ ] Try to improve framerate. 
+- [ ] Make it plug and play: Right know, you have to launch the node with the camera connected, and it crashes if you disconnect it. The best behavior would be to wait until a device is discovered at the startup and if the camera is disconnected, wait again.
