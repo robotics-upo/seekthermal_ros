@@ -5,8 +5,6 @@ ROS node for Seek thermal imaging devices
 
 This node has a lot of dependencies and you need to install them manually because of the PPA does not work. You can also run the script `installDependencies.sh` in the scripts folder. 
 
-The above steps are valid for Ubuntu 16.04. If you are using Ubuntu 18 or later, you have to modifiy the file `src/bin/gui/view.cpp` in the libseekthermal package before compiling. Maybe we can fork it to our own repository and fix it. 
-
 First install these dependencies from the repositories:
 
 `sudo apt-get install doxygen pkg-config debhelper cmake groff qt4-dev-tools -y`
@@ -21,7 +19,7 @@ Then, download, compile and install with cmake ReMake package:
 
 Then, you compile and install libseekthermal:
 
-`git clone https://github.com/ethz-asl/libseekthermal.git && mkdir -p libseekthermal/build && cd libseekthermal/build && cmake .. && make && sudo make install`
+`git clone https://github.com/robotics-upo/libseekthermal.git && mkdir -p libseekthermal/build && cd libseekthermal/build && cmake .. && make && sudo make install`
 
 ## Known Issues
 
@@ -31,5 +29,5 @@ If you try to launch the included launch and it gives Usb Error: Access denied, 
 
 ## Todo
 
-- [ ] Improve performance. Sometimes the CPU comsuption is 100%
+- [x] Improve performance. Sometimes the CPU comsuption is 100%: Finally fixed, there were 2 while loops withouth sleeps....
 - [ ] Try to improve framerate. 
