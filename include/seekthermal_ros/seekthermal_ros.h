@@ -81,7 +81,7 @@ private:
   bool calibrate_mean_compensation_;
   bool denoise_;
   bool show_debug_images_;
-
+  double rate;
   enum State {CALIBRATE_DEAD_PIXEL, LOAD_DEAD_PIXEL, CALIBRATE_MEAN, LOAD_MEAN, RUN};
   State state_;
 
@@ -94,7 +94,7 @@ private:
   std::queue<Pointer<Frame>> frame_queue_;
   mutable boost::mutex mutex_;
   boost::condition_variable condition_variable_;
-
+  
 };
 
 } /* namespace */

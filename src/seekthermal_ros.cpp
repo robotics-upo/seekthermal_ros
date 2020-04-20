@@ -27,7 +27,8 @@ SeekthermalRos::SeekthermalRos(ros::NodeHandle nh): nh_(nh), it_(nh)
   nh_.getParam("camera_name", camera_name_);
   nh_.getParam("camera_info_url", camera_info_url_);
   nh_.param("package_calibration_files", package_path_name,(std::string)"seekthermal_ros");
-
+  nh_.param("rate", rate, 10.0);
+  
   //Create a publisher for the raw thermal image
   thermal_image_publisher_ = it_.advertiseCamera(camera_name_ + "/" + thermal_image_topic_name_, 1);
   colored_thermal_image_publisher_ = it_.advertise(camera_name_ + "/" + colored_thermal_image_topic_name_, 1);
@@ -63,7 +64,7 @@ SeekthermalRos::SeekthermalRos(ros::NodeHandle nh): nh_(nh), it_(nh)
       {
         ROS_INFO_STREAM("Found " << (*it)->getInterface()->getName() << " " << (*it)->getInterface()->getAddress());
       }
-
+      
       ROS_INFO_STREAM("Trying to open first device: " << devices.front()->getInterface()->getAddress());
       interface = context.getInterface(devices.front()->getInterface()->getAddress());
     }
@@ -117,6 +118,8 @@ SeekthermalRos::~SeekthermalRos()
 
 void SeekthermalRos::captureThermalImages(const Pointer<Device>& device)
 {
+  ros::Rate sleep_capture(rate);
+
   while(ros::ok())
   {
     if (thermal_image_publisher_.getNumSubscribers()>0 ||
@@ -135,9 +138,9 @@ void SeekthermalRos::captureThermalImages(const Pointer<Device>& device)
       }
       lock.unlock();
       condition_variable_.notify_one();
+
     }
-    else
-      ros::Duration(0.1).sleep();
+    sleep_capture.sleep();
   }
 }
 
@@ -151,7 +154,7 @@ void SeekthermalRos::publishingThermalImages()
 
   static Frame meanFrame;
   static Frame varianceFrame;
-  ros::Rate sleep_rate(8);
+  ros::Rate sleep_rate_pub(rate);
 
   while(ros::ok())
   {
@@ -447,7 +450,7 @@ void SeekthermalRos::publishingThermalImages()
       //ROS_INFO_STREAM("Calibration Frame");
       last_calibration_frame_ = *frame;
     }
-    sleep_rate.sleep();
+    sleep_rate_pub.sleep();
   }
 }
 
